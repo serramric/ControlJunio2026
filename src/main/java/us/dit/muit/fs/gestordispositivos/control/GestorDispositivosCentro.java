@@ -103,7 +103,15 @@ public class GestorDispositivosCentro implements GestorDispositivos {
 
     @Override
     public void altaDispositivo(String modelo, Dispositivo.TipoDispositivo tipo, String numeroSerie) {
-       dispositivoDAO.addDispositivo(new Dispositivo(tipo, modelo, numeroSerie));
+        Dispositivo dispositivoExistente = dispositivoDAO.getDispositivoByNumSerie(numeroSerie);
+
+        if (dispositivoExistente != null) {
+            throw new IllegalArgumentException(
+                    "Dispositivo con Numero de Serie " + numeroSerie + " ya existe"
+            );
+        }
+
+        dispositivoDAO.addDispositivo(new Dispositivo(tipo, modelo, numeroSerie));
     }
 
     @Override
