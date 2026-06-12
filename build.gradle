@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+group = 'us.dit.muit.fs.serramric'
+version = "1.0.${System.getenv('GITHUB_RUN_NUMBER') ?: '0'}"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.apache.logging.log4j:log4j-api:2.24.3'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testImplementation 'org.mockito:mockito-core:5.12.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            groupId = project.group
+            artifactId = 'gestor-dispositivos'
+            version = project.version
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/${System.getenv('GITHUB_REPOSITORY') ?: 'serramric/ControlJunio2026'}")
+
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
